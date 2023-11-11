@@ -40,9 +40,23 @@ $ npm run start
 
 # watch mode
 $ npm run start:dev
+$ npm run dev
 
 # production mode
 $ npm run start:prod
+```
+
+## Running migrations
+
+```bash
+# generate migration
+$ npm run migration:generate --name={some_name}
+
+# run migration
+$ npm run migration:run
+
+# revert migration
+$ npm run migration:revert
 ```
 
 ## Test
