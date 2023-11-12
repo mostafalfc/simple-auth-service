@@ -1,6 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import configuration from '../configuration';
+import configuration from './configuration';
 
 export const createDBIfNotExists = async (): Promise<void> => {
   const db_options = configuration().database.type_orm_option;

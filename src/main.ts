@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { createDBIfNotExists } from './config/postgres/create-db-if-not-exists';
+import { createDBIfNotExists } from './config/create-db-if-not-exists';
 
 async function bootstrap() {
   await createDBIfNotExists();
@@ -9,6 +9,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Auth Service')
     .addTag('auth')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

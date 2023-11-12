@@ -12,6 +12,8 @@ import { AppService } from './app.service';
 import configuration from './config/configuration';
 import { HelpersModule } from './helpers/helpers.module';
 import { UsersModule } from './users/users.module';
+import { LogsModule } from './logs/logs.module';
+import { RolesModule } from './roles/roles.module';
 
 @Module({
   imports: [
@@ -36,6 +38,8 @@ import { UsersModule } from './users/users.module';
     ThrottlerModule.forRoot([configuration().rate_limit]),
     RedisModule.forRoot({ config: configuration().cache }),
     HelpersModule,
+    LogsModule,
+    RolesModule,
   ],
   controllers: [AppController],
   providers: [

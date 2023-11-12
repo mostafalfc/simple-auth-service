@@ -1,5 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { EncryptionService } from 'src/helpers/encryption.service';
+import { RolesRepository } from 'src/roles/repositories/roles.repository';
+import { DataSource, EntityManager } from 'typeorm';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { TempUser } from '../entities/temp-user.model';
 import { UserStatus } from '../enums';
@@ -13,6 +15,8 @@ export class TempUsersService {
     private readonly encryptionService: EncryptionService,
     private readonly tempUserRepository: TempUsersRepository,
     private readonly userRepository: UsersRepository,
+    private readonly rolesRepository: RolesRepository,
+    private readonly dataSource: DataSource,
   ) {}
 
   async createTempUser(createUserDto: CreateUserDto): Promise<TempUser> {
@@ -34,12 +38,24 @@ export class TempUsersService {
   async verify(token: string): Promise<boolean> {
     const user_id = await this.encryptionService.decrypt(token);
     const result = await this.tempUserRepository.findOneAndVerify(user_id);
-    const user = await this.userRepository.create({
-      first_name: result.first_name,
-      last_name: result.last_name,
-      email: result.email,
-      password: result.password,
-    });
+    const default_role = await this.rolesRepository.findDefaultRole();
+    const user = this.dataSource.transaction(
+      async (entityManager: EntityManager) => {
+        const user = await this.userRepository
+          .attachToTransaction(entityManager)
+          .create({
+            first_name: result.first_name,
+            last_name: result.last_name,
+            email: result.email,
+            password: result.password,
+          });
+        await this.userRepository
+          .attachToTransaction(entityManager)
+          .updateRoles(user.id, [default_role.id]);
+        return user;
+      },
+    );
+
     return !!user;
   }
 

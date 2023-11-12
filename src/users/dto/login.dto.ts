@@ -1,15 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsNotEmpty, IsNumber } from 'class-validator';
 
 export class LoginDto {
-  @IsEmail()
+  @IsNumber()
   @IsNotEmpty()
-  @ApiProperty({ type: String, required: true })
-  email: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(8)
-  @ApiProperty({ type: String, required: true })
-  password: string;
+  @ApiProperty({ type: Number, required: true })
+  @Type(() => Number)
+  role_id: number;
 }
