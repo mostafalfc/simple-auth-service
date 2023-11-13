@@ -33,7 +33,7 @@ export class UsersController {
     return this.tempUsersService.createTempUser(body);
   }
 
-  @Patch('/verify/:token')
+  @Get('/verify/:token')
   async verify(@Param() param: VerifyUserDto) {
     return await this.tempUsersService.verify(param.token);
   }

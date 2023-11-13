@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import configuration from './config/configuration';
 import { createDBIfNotExists } from './config/create-db-if-not-exists';
 
 async function bootstrap() {
@@ -14,6 +15,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(3000);
+  await app.listen(configuration().app.port, configuration().app.host);
 }
 bootstrap();

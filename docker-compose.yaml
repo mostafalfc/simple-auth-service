@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+    auth-service:
+        container_name: auth_service
+        build:
+            context: .
+            dockerfile: ./Dockerfile
+        environment:
+        - HOST=${HOST:-127.0.0.1}
+        - PORT=${PORT:-3001}
+        - RMQ_URL=${RMQ_URL:-amqp://rabbitmq:5672}
+        - MONGO_URL=${MONGO_URL:-mongodb://mongodb:27017/users}
+        - POSTGRES_URL=${POSTGRES_URL:-postgres://postgres:postgres@postgres:5432/users}
+        - REDIS_HOST=${REDIS_HOST:-redis}
+        - REDIS_PORT=${REDIS_PORT:-6379}
+        - JWT_SECRET=${JWT_SECRET:-0$MIBzUARJp1t4}
+        - RATE_LIMIT=${RATE_LIMIT:-30}
+        - RATE_LIMIT_TTL=${RATE_LIMIT_TTL:-60000}
+      
+        command: npm run start
+        volumes:
+            - .:/usr/src/app
+            - /usr/src/app/node_modules
+        restart: always
+

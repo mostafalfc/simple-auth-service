@@ -1,4 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { Client, ClientRMQ } from '@nestjs/microservices';
+import configuration from 'src/config/configuration';
+import { MailServiceRmqClient } from 'src/config/mail-service-client.rmq';
 import { EncryptionService } from 'src/helpers/encryption.service';
 import { RolesRepository } from 'src/roles/repositories/roles.repository';
 import { DataSource, EntityManager } from 'typeorm';
@@ -19,6 +22,9 @@ export class TempUsersService {
     private readonly dataSource: DataSource,
   ) {}
 
+  @Client(MailServiceRmqClient)
+  private readonly mailChannel: ClientRMQ;
+
   async createTempUser(createUserDto: CreateUserDto): Promise<TempUser> {
     createUserDto.password = await this.encryptionService.hash(
       createUserDto.password,
@@ -31,7 +37,18 @@ export class TempUsersService {
       throw new BadRequestException('This user exists.');
     }
     const user = await this.tempUserRepository.create(createUserDto);
-    //todo send email
+
+    const verify_token = await this.encryptionService.encrypt(
+      user._id.toString(),
+    );
+
+    this.mailChannel.emit('send-mail', {
+      to: user.email,
+      link: `${configuration().app.host}:${
+        configuration().app.port
+      }/users/verify/${verify_token}`,
+    });
+
     return user;
   }
 

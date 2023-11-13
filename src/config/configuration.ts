@@ -1,4 +1,8 @@
 export default () => ({
+  app: {
+    host: process.env.HOST,
+    port: process.env.PORT,
+  },
   database: {
     mongo: process.env.MONGO_URL,
     postgres_url: process.env.POSTGRES_URL,
@@ -29,5 +33,9 @@ export default () => ({
   rate_limit: {
     limit: +process.env.RATE_LIMIT,
     ttl: +process.env.RATE_LIMIT_TTL,
+  },
+  rmq: {
+    url: process.env.RMQ_URL ?? 'amqp://localhost:5672',
+    queue: 'mails',
   },
 });
